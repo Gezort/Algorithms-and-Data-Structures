@@ -10,13 +10,14 @@ import java.util.Collection;
  */
 public class TWildcardSingleTemplateMatcher implements IMetaTemplateMatcher {
 
-    private int MAXK = 1000;
-    private int MAXN = 1000;
+    private int MAXK = 5000;
+    private int MAXN = 5000;
     private int[][] coincidences;
     private int[] coincN;
     private int[] tmpLength;
     private int wildcardN = 0;
     private TStaticTemplateMatcher matcher;
+    private boolean created;
 
     public TWildcardSingleTemplateMatcher() {
         coincidences = new int[MAXK][];
@@ -26,6 +27,7 @@ public class TWildcardSingleTemplateMatcher implements IMetaTemplateMatcher {
 
     @Override
     public int addTemplate(String template) throws TNotSupportedException {
+        created = true;
         for (int i = 0; i < wildcardN; i++) {
             coincidences[i] = null;
         }
@@ -54,6 +56,9 @@ public class TWildcardSingleTemplateMatcher implements IMetaTemplateMatcher {
 
     @Override
     public ArrayList<Pair<Integer, Integer>> MatchStream(ICharStream stream) throws TNotSupportedException {
+        if (!created) {
+            throw new TNotSupportedException("Stream matching without template isn't supported");
+        }
         int[] index = new int[MAXK];
         ArrayList<Pair<Integer, Integer>> res = matcher.MatchStream(stream);
         for (Pair<Integer, Integer> pair : res) {
@@ -65,21 +70,18 @@ public class TWildcardSingleTemplateMatcher implements IMetaTemplateMatcher {
             Arrays.sort(coincidences[i], 0, coincN[i]);
         }
         res = new ArrayList<>();
-
         for (int i = 0; i < coincN[0]; i++) {
             index[0] = i;
-            boolean flag = false;
+            boolean flag = true;
             for (int j = 1; j < wildcardN; j++) {
-                int previousEnd = coincidences[j - 1][index[j - 1]] + tmpLength[j - 1];
+                int previousEnd = coincidences[j - 1][index[j - 1]] + 1;
                 int curInd = index[j];
                 while (curInd < coincN[j] && coincidences[j][curInd] < previousEnd + 1) {
                     curInd++;
                 }
                 if (curInd > coincN[j] || coincidences[j][curInd] != previousEnd + 1) {
+                    flag = false;
                     break;
-                }
-                if (j == wildcardN - 1) {
-                    flag = true;
                 }
             }
             if (flag) {
