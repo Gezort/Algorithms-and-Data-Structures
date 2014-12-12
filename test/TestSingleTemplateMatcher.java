@@ -32,7 +32,15 @@ public class TestSingleTemplateMatcher {
 
     private void TestProductivity(String template, String stream) throws TNotSupportedException {
         singleTemplateMatcher = new TSingleTemplateMatcher();
-        singleTemplateMatcher.addTemplate(template);
+        int mid = template.length() / 2;
+        String tmp = "" + template.charAt(mid);
+        singleTemplateMatcher.addTemplate(tmp);
+        for (int i = mid - 1; i >= 0; i--) {
+            singleTemplateMatcher.prependCharToTemplate(template.charAt(i));
+        }
+        for (int i = mid + 1; i < template.length(); i++) {
+            singleTemplateMatcher.appendCharToTemplate(template.charAt(i));
+        }
         streamSingle = new StringStream(stream);
         singleTemplateMatcher.MatchStream(streamSingle);
         Assert.assertTrue(singleTemplateMatcher.getNumberOfOperations() < 4*stream.length());

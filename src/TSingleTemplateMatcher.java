@@ -6,8 +6,10 @@ import java.util.ArrayList;
  * Created by Мирон on 10.10.2014 PACKAGE_NAME.
  */
 public class TSingleTemplateMatcher implements IMetaTemplateMatcher {
-    private String template;
-    private int N;
+    private String leftTemplate;
+    private String rightTemplate;
+    private int rightN;
+    private int leftN;
     private int MAXN = 1000000;
     private int[] pi;
     private int piPos = 0;
@@ -19,9 +21,18 @@ public class TSingleTemplateMatcher implements IMetaTemplateMatcher {
     }
 
     TSingleTemplateMatcher() {
-        N = 0;
+        leftN = rightN = 0;
         pi = new int[MAXN];
-        template = null;
+    }
+
+    private char getTemplateChar(int ind) {
+        if (ind < leftN) {
+            return leftTemplate.charAt(leftN - ind - 1);
+        }
+        if (ind == leftN + rightN) {
+            return '$';
+        }
+        return rightTemplate.charAt(ind - leftN);
     }
 
     private int getPi(int pos) {
@@ -32,11 +43,11 @@ public class TSingleTemplateMatcher implements IMetaTemplateMatcher {
         for (int i = piPos + 1; i <= pos; i++) {
             numberOfOperations++;
             int k = pi[i - 1];
-            while (k > 0 && template.charAt(i) != template.charAt(k)) {
+            while (k > 0 && getTemplateChar(i) != getTemplateChar(k)) {
                 numberOfOperations++;
                 k = pi[k - 1];
             }
-            pi[i] = (template.charAt(i) == template.charAt(k) ? k + 1 : 0);
+            pi[i] = (getTemplateChar(i) == getTemplateChar(k) ? k + 1 : 0);
         }
         piPos = pos;
         return pi[pos];
@@ -44,8 +55,9 @@ public class TSingleTemplateMatcher implements IMetaTemplateMatcher {
 
     @Override
     public int addTemplate(String tmp) throws TNotSupportedException {
-        N = tmp.length();
-        template = tmp;
+        rightN = tmp.length();
+        leftTemplate = "";
+        rightTemplate = tmp;
         pi[0] = 0;
         piPos = 0;
         return id++;
@@ -53,45 +65,45 @@ public class TSingleTemplateMatcher implements IMetaTemplateMatcher {
 
     @Override
     public ArrayList<Pair<Integer, Integer>> MatchStream(ICharStream stream) throws TNotSupportedException {
-        if (template == null) {
+        if (rightTemplate == null) {
             throw new TNotSupportedException("Stream matching without template isn't supported in TSingleTemplateMatcher");
         }
         ArrayList<Pair<Integer, Integer> > result = new ArrayList<Pair<Integer, Integer> >();
         int previousPi = 0;
         int pos = 0;
-        template += "$";
         while (!stream.isEmpty()) {
             char nextChar = stream.getChar();
             int currentPi = previousPi;
             numberOfOperations++;
-            while (currentPi > 0 && template.charAt(currentPi) != nextChar) {
+            while (currentPi > 0 && getTemplateChar(currentPi) != nextChar) {
                 numberOfOperations++;
                 currentPi = getPi(currentPi - 1);
             }
-            previousPi = (template.charAt(currentPi) == nextChar ? currentPi + 1 : 0);
-            if (previousPi == N) {
+            previousPi = (getTemplateChar(currentPi) == nextChar ? currentPi + 1 : 0);
+            if (previousPi == leftN + rightN) {
                 result.add(new Pair<Integer, Integer> (pos, id - 1));
             }
             pos++;
         }
-        template = template.substring(0,template.length() - 1);
         return result;
     }
 
     public void appendCharToTemplate(char c) throws TNotSupportedException {
-        if (template == null) {
+        if (rightTemplate == null) {
             throw new TNotSupportedException("Character appending without template isn't supported in TSingleTemplateMatcher");
         }
-        template += c;
-        N++;
+        numberOfOperations++;
+        rightTemplate += c;
+        rightN++;
     }
 
     public void prependCharToTemplate(char c) throws TNotSupportedException {
-        if (template == null) {
+        if (leftTemplate == null) {
             throw new TNotSupportedException("Character prepending without template isn't supported in TSingleTemplateMatcher");
         }
-        template = c + template;
-        N++;
+        numberOfOperations++;
+        leftTemplate += c;
+        leftN++;
         pi[0] = 0;
         piPos = 0;
     }
