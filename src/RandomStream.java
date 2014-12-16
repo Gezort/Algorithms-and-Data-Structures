@@ -8,7 +8,7 @@ public class RandomStream implements ICharStream {
     private int Len;
     private int pos;
     public RandomStream(int alphabetSize, int N)  {
-        Random random = new Random();
+        Random random = new Random(System.nanoTime());
         Len = N;
         if (Len == 0) {
             Len = Math.abs(random.nextInt()) % 10000;

@@ -3,6 +3,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by Мирон on 12.12.2014 PACKAGE_NAME.
@@ -45,21 +46,18 @@ public class TestWildCardSingleTemplateMatcher {
         }
     }
 
-//    private void TestProductivity(String template, String stream) throws TNotSupportedException {
-//        singleTemplateMatcher = new TSingleTemplateMatcher();
-//        int mid = template.length() / 2;
-//        String tmp = "" + template.charAt(mid);
-//        singleTemplateMatcher.addTemplate(tmp);
-//        for (int i = mid - 1; i >= 0; i--) {
-//            singleTemplateMatcher.prependCharToTemplate(template.charAt(i));
-//        }
-//        for (int i = mid + 1; i < template.length(); i++) {
-//            singleTemplateMatcher.appendCharToTemplate(template.charAt(i));
-//        }
-//        streamSingle = new StringStream(stream);
-//        singleTemplateMatcher.MatchStream(streamSingle);
-//        Assert.assertTrue(singleTemplateMatcher.getNumberOfOperations() < 4*stream.length());
-//    }
+    private void TestProductivity(String template, String stream) throws TNotSupportedException {
+        wildcardSingleTemplateMatcher = new TWildcardSingleTemplateMatcher();
+        wildcardSingleTemplateMatcher.addTemplate(template);
+        int k = 1;
+        for (int i = 0; i < template.length(); i++) {
+            if (template.charAt(i) == '?') {
+                k++;
+            }
+        }
+        streamSingle = new StringStream(stream);
+        Assert.assertTrue(wildcardSingleTemplateMatcher.getNumberOfOperations() < 4 * k * stream.length());
+    }
 
     @Test
     public void simpleTest() throws TNotSupportedException{
@@ -76,32 +74,62 @@ public class TestWildCardSingleTemplateMatcher {
     public void cleverTest() throws TNotSupportedException{
         TestEquality("aba", "a");
         TestEquality("aba", "");
-//        TestEquality("", "aba");
-//        TestEquality("", "");
+        TestEquality("", "aba");
+        TestEquality("", "");
+        TestEquality("????", "aaa");
+        TestEquality("a?", "aaaa");
+        TestEquality("?a", "aaaa");
+        TestEquality("?", "");
+        TestEquality("?a?", "aaaaaaa");
     }
 
     @Test
     public void stressTest() throws TNotSupportedException {
+        Random generator = new Random(System.nanoTime());
         for (int i = 0; i < 100; i++) {
-            RandomStream template = new RandomStream(2 + i % 5,i % 10);
-            RandomStream stream = new RandomStream(2 * (i % 5  + 1),2000);
-            TestEquality(template.getString(), stream.getString());
+            RandomStream rnd = new RandomStream(2 + i % 5,i % 10);
+            StringBuilder template = new StringBuilder(rnd.getString());
+            for (int j = 0; j < template.length(); j++) {
+                if (generator.nextInt() % 3 == 0) {
+                    template.replace(j, j, "?");
+                }
+            }
+            RandomStream stream = new RandomStream(2 * (i % 5  + 1),500);
+            TestEquality(template.toString(), stream.getString());
         }
     }
 
-//    @Test
-//    public void productivityTest() throws TNotSupportedException {
-//        String s = "";
-//        for (int i = 0; i < 100000; i++) {
-//            s += "a";
-//        }
-//        TestProductivity("a",s);
-//        s = "a";
-//        for (char a = 'b'; a <= 'f'; a++) {
-//            s += a + s;
-//        }
-//        TestProductivity("a",s);
-//    }
+    @Test
+    public void productivityTest() throws TNotSupportedException {
+        StringBuilder s = new StringBuilder("");
+        for (int i = 0; i < 1000000; i++) {
+            s.append('a');
+        }
+        TestProductivity("a",s.toString());
+        s = new StringBuilder('a');
+        for (char a = 'b'; a <= 'f'; a++) {
+            s.append(a + s.toString());
+        }
+        TestProductivity("a",s.toString());
+        TestProductivity("?",s.toString());
+        StringBuilder template = new StringBuilder("");
+        for (int i = 0; i < 100; i++) {
+            if (i % 4 < 2) {
+                template.append('?');
+            } else {
+                template.append('a');
+            }
+        }
+        TestProductivity(template.toString(),s.toString());
+        template = new StringBuilder("");
+        for (int i = 0; i < 100; i++) {
+            if (i % 2 != 0) {
+                template.append('?');
+            } else {
+                template.append('a');
+            }
+        }
+    }
 
     @Test (expected = TNotSupportedException.class)
     public void matchExceptionTest() throws TNotSupportedException {

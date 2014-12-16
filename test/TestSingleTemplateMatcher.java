@@ -74,16 +74,16 @@ public class TestSingleTemplateMatcher {
 
     @Test
     public void productivityTest() throws TNotSupportedException {
-        String s = "";
+        StringBuilder s = new StringBuilder("");
         for (int i = 0; i < 100000; i++) {
-            s += "a";
+            s.append('a');
         }
-        TestProductivity("a",s);
-        s = "a";
+        TestProductivity("a",s.toString());
+        s = new StringBuilder('a');
         for (char a = 'b'; a <= 'f'; a++) {
-            s += a + s;
+            s.append(a + s.toString());
         }
-        TestProductivity("a",s);
+        TestProductivity("a",s.toString());
     }
 
     @Test (expected = TNotSupportedException.class)
