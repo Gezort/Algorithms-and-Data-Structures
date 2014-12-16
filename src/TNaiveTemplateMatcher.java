@@ -42,7 +42,6 @@ public class TNaiveTemplateMatcher implements IMetaTemplateMatcher{
                 }
                 if (t.equals(currentStr.substring(currentStr.length() - t.length()))) {
                     result.add(new Pair<Integer, Integer> (pos, i));
-                    //System.out.println("naive " + pos + " " + i);
                 }
             }
             pos++;

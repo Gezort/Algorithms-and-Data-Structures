@@ -10,8 +10,7 @@ public class TSingleTemplateMatcher implements IMetaTemplateMatcher {
     private String rightTemplate;
     private int rightN;
     private int leftN;
-    private int MAXN = 1000000;
-    private int[] pi;
+    private ArrayList<Integer> pi;
     private int piPos = 0;
     private int id = 0;
     private int numberOfOperations;
@@ -22,7 +21,6 @@ public class TSingleTemplateMatcher implements IMetaTemplateMatcher {
 
     TSingleTemplateMatcher() {
         leftN = rightN = 0;
-        pi = new int[MAXN];
     }
 
     private char getTemplateChar(int ind) {
@@ -38,19 +36,19 @@ public class TSingleTemplateMatcher implements IMetaTemplateMatcher {
     private int getPi(int pos) {
         numberOfOperations++;
         if (pos <= piPos) {
-            return pi[pos];
+            return pi.get(pos);
         }
         for (int i = piPos + 1; i <= pos; i++) {
             numberOfOperations++;
-            int k = pi[i - 1];
+            int k = pi.get(i - 1);
             while (k > 0 && getTemplateChar(i) != getTemplateChar(k)) {
                 numberOfOperations++;
-                k = pi[k - 1];
+                k = pi.get(k - 1);
             }
-            pi[i] = (getTemplateChar(i) == getTemplateChar(k) ? k + 1 : 0);
+            pi.add((getTemplateChar(i) == getTemplateChar(k) ? k + 1 : 0));
         }
         piPos = pos;
-        return pi[pos];
+        return pi.get(pos);
     }
 
     @Override
@@ -59,7 +57,8 @@ public class TSingleTemplateMatcher implements IMetaTemplateMatcher {
         rightN = tmp.length();
         leftTemplate = "";
         rightTemplate = tmp;
-        pi[0] = 0;
+        pi = new ArrayList<>();
+        pi.add(0);
         piPos = 0;
         return id++;
     }
@@ -105,7 +104,8 @@ public class TSingleTemplateMatcher implements IMetaTemplateMatcher {
         numberOfOperations++;
         leftTemplate += c;
         leftN++;
-        pi[0] = 0;
+        pi = new ArrayList<>();
+        pi.add(0);
         piPos = 0;
     }
 }
