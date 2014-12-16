@@ -55,6 +55,7 @@ public class TSingleTemplateMatcher implements IMetaTemplateMatcher {
 
     @Override
     public int addTemplate(String tmp) throws TNotSupportedException {
+        numberOfOperations = 0;
         rightN = tmp.length();
         leftTemplate = "";
         rightTemplate = tmp;

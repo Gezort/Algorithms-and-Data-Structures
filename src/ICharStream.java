@@ -5,5 +5,5 @@ public interface ICharStream {
 
     char getChar();
     boolean isEmpty();
-
+    int streamSize();
 }

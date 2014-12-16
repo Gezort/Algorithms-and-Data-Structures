@@ -8,6 +8,7 @@ public class StringStream implements ICharStream {
         stream = s;
         pos = 0;
     }
+
     @Override
     public char getChar() {
         return stream.charAt(pos++);
@@ -16,5 +17,10 @@ public class StringStream implements ICharStream {
     @Override
     public boolean isEmpty() {
         return (pos >= stream.length());
+    }
+
+    @Override
+    public int streamSize() {
+        return stream.length();
     }
 }

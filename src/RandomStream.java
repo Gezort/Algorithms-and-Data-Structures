@@ -23,6 +23,7 @@ public class RandomStream implements ICharStream {
     public String getString() {
         return stream;
     }
+
     @Override
     public char getChar() {
         return stream.charAt(pos++);
@@ -31,5 +32,10 @@ public class RandomStream implements ICharStream {
     @Override
     public boolean isEmpty() {
         return pos >= Len;
+    }
+
+    @Override
+    public int streamSize() {
+        return stream.length();
     }
 }

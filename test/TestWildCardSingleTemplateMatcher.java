@@ -65,9 +65,11 @@ public class TestWildCardSingleTemplateMatcher {
     public void simpleTest() throws TNotSupportedException{
         TestEquality("a", "aaaa");
         TestEquality("ab", "abacaba");
-        TestEquality("aba", "abacabadabacaba");
         TestEquality("aba", "aba");
         TestEquality("d", "ababa");
+        TestEquality("a??", "abacaba");
+        TestEquality("?a", "abacaba");
+        TestEquality("a??ba", "abacabadabacadaba");
     }
 
     @Test

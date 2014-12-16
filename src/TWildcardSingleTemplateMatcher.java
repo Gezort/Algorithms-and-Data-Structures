@@ -1,9 +1,7 @@
 import javafx.util.Pair;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * Created by Мирон on 05.12.2014 PACKAGE_NAME.
@@ -15,9 +13,13 @@ public class TWildcardSingleTemplateMatcher implements IMetaTemplateMatcher {
     private int[][] coincidences;
     private int[] coincN;
     private int[] tmpLength;
+    private int templateSummaryLength = 0;
+    private int streamLength = 0;
     private int wildcardN = 0;
     private TStaticTemplateMatcher matcher;
     private boolean created;
+
+    private int numberOfOperations;
 
     public TWildcardSingleTemplateMatcher() {
         coincidences = new int[MAXK][];
@@ -27,6 +29,7 @@ public class TWildcardSingleTemplateMatcher implements IMetaTemplateMatcher {
 
     @Override
     public int addTemplate(String template) throws TNotSupportedException {
+        numberOfOperations = 0;
         created = true;
         for (int i = 0; i < wildcardN; i++) {
             coincidences[i] = null;
@@ -45,12 +48,11 @@ public class TWildcardSingleTemplateMatcher implements IMetaTemplateMatcher {
                 builder.append(template.charAt(i));
             }
         }
-        if (builder.length() > 0) {
-            tmpLength[wildcardN] = builder.length();
-            matcher.addTemplate(builder.toString());
-            coincidences[wildcardN] = new int[MAXN];
-            coincN[wildcardN++] = 0;
-        }
+        tmpLength[wildcardN] = builder.length();
+        matcher.addTemplate(builder.toString());
+        coincidences[wildcardN] = new int[MAXN];
+        coincN[wildcardN++] = 0;
+        templateSummaryLength = template.length();
         return 0;
     }
 
@@ -61,13 +63,25 @@ public class TWildcardSingleTemplateMatcher implements IMetaTemplateMatcher {
         }
         int[] index = new int[MAXK];
         ArrayList<Pair<Integer, Integer>> res = matcher.MatchStream(stream);
+        streamLength = stream.streamSize();
         for (Pair<Integer, Integer> pair : res) {
             int tmpNum = pair.getValue();
+            if (tmpLength[tmpNum] == 0) {
+                continue;
+            }
             coincidences[tmpNum][coincN[tmpNum]++] = pair.getKey();
         }
         for (int i = 0; i < wildcardN; i++) {
+            if (tmpLength[i] == 0) {
+                coincN[i] = streamLength;
+                for (int j = 0; j < coincN[i]; j++) {
+                    coincidences[i][j] = j;
+                }
+            }
+        }
+        for (int i = 0; i < wildcardN; i++) {
             index[i] = 0;
-            Arrays.sort(coincidences[i], 0, coincN[i]);
+            //Arrays.sort(coincidences[i], 0, coincN[i]);
         }
         res = new ArrayList<>();
         for (int i = 0; i < coincN[0]; i++) {
@@ -76,19 +90,23 @@ public class TWildcardSingleTemplateMatcher implements IMetaTemplateMatcher {
             for (int j = 1; j < wildcardN; j++) {
                 int previousEnd = coincidences[j - 1][index[j - 1]] + 1;
                 int curInd = index[j];
-                while (curInd < coincN[j] && coincidences[j][curInd] < previousEnd + 1) {
+                while (curInd < coincN[j] && coincidences[j][curInd] < previousEnd + tmpLength[j]) {
                     curInd++;
+                    index[j]++;
                 }
-                if (curInd > coincN[j] || coincidences[j][curInd] != previousEnd + 1) {
+                if (curInd >= coincN[j] || coincidences[j][curInd] != previousEnd + tmpLength[j]) {
                     flag = false;
                     break;
                 }
             }
             if (flag) {
-                res.add(new Pair<>(coincidences[0][i], 0));
+                res.add(new Pair<>(coincidences[0][i] + templateSummaryLength - tmpLength[0], 0));
             }
         }
         return res;
     }
 
+    public int getNumberOfOperations() {
+        return numberOfOperations;
+    }
 }

@@ -7,12 +7,15 @@ public class CharStream implements ICharStream {
     private Scanner scanner = new Scanner(System.in);
     private String stream = "";
     private int pos = 0;
+    private int sz = 0;
+
     @Override
     public char getChar() {
         while (pos >= stream.length()) {
             stream = scanner.nextLine();
             pos = 0;
         }
+        sz++;
         return stream.charAt(pos++);
     }
 
@@ -22,5 +25,10 @@ public class CharStream implements ICharStream {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public int streamSize() {
+        return sz;
     }
 }
