@@ -22,8 +22,8 @@ public class TestSingleTemplateMatcher {
         singleTemplateMatcher.addTemplate(template);
         streamNaive = new StringStream(stream);
         streamSingle = new StringStream(stream);
-        ArrayList<Pair<Integer, Integer> > naiveResult = naiveTemplateMatcher.MatchStream(streamNaive);
-        ArrayList<Pair<Integer, Integer> > singleResult = singleTemplateMatcher.MatchStream(streamSingle);
+        ArrayList<Pair<Integer, Integer>> naiveResult = naiveTemplateMatcher.MatchStream(streamNaive);
+        ArrayList<Pair<Integer, Integer>> singleResult = singleTemplateMatcher.MatchStream(streamSingle);
         Assert.assertEquals(naiveResult.size(), singleResult.size());
         for (int i = 0; i < naiveResult.size(); i++) {
             Assert.assertEquals(naiveResult.get(i), singleResult.get(i));
@@ -43,11 +43,11 @@ public class TestSingleTemplateMatcher {
         }
         streamSingle = new StringStream(stream);
         singleTemplateMatcher.MatchStream(streamSingle);
-        Assert.assertTrue(singleTemplateMatcher.getNumberOfOperations() < 4*stream.length());
+        Assert.assertTrue(singleTemplateMatcher.getNumberOfOperations() < 4 * stream.length());
     }
 
     @Test
-    public void simpleTest() throws TNotSupportedException{
+    public void simpleTest() throws TNotSupportedException {
         TestEquality("a", "aaaa");
         TestEquality("ab", "abacaba");
         TestEquality("aba", "abacabadabacaba");
@@ -56,7 +56,7 @@ public class TestSingleTemplateMatcher {
     }
 
     @Test
-    public void cleverTest() throws TNotSupportedException{
+    public void cleverTest() throws TNotSupportedException {
         TestEquality("aba", "a");
         TestEquality("aba", "");
         TestEquality("", "aba");
@@ -66,8 +66,8 @@ public class TestSingleTemplateMatcher {
     @Test
     public void stressTest() throws TNotSupportedException {
         for (int i = 0; i < 100; i++) {
-            RandomStream template = new RandomStream(2 + i % 5,i % 10);
-            RandomStream stream = new RandomStream(2 * (i % 5  + 1),10000);
+            RandomStream template = new RandomStream(2 + i % 5, i % 10);
+            RandomStream stream = new RandomStream(2 * (i % 5 + 1), 10000);
             TestEquality(template.getString(), stream.getString());
         }
     }
@@ -78,25 +78,25 @@ public class TestSingleTemplateMatcher {
         for (int i = 0; i < 100000; i++) {
             s.append('a');
         }
-        TestProductivity("a",s.toString());
+        TestProductivity("a", s.toString());
         s = new StringBuilder('a');
         for (char a = 'b'; a <= 'f'; a++) {
             s.append(a + s.toString());
         }
-        TestProductivity("a",s.toString());
+        TestProductivity("a", s.toString());
     }
 
-    @Test (expected = TNotSupportedException.class)
+    @Test(expected = TNotSupportedException.class)
     public void prependExceptionTest() throws TNotSupportedException {
         singleTemplateMatcher.prependCharToTemplate('a');
     }
 
-    @Test (expected = TNotSupportedException.class)
+    @Test(expected = TNotSupportedException.class)
     public void appendExceptionTest() throws TNotSupportedException {
         singleTemplateMatcher.appendCharToTemplate('b');
     }
 
-    @Test (expected = TNotSupportedException.class)
+    @Test(expected = TNotSupportedException.class)
     public void matchExceptionTest() throws TNotSupportedException {
         streamSingle = new StringStream("a");
         singleTemplateMatcher.MatchStream(streamSingle);

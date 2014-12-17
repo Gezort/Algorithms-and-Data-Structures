@@ -10,18 +10,22 @@ public class TDynamicTemplateMatcher implements IMetaTemplateMatcher {
     private ArrayList<TStaticTemplateMatcher> matchers = new ArrayList<>();
     private ArrayList<Integer> size = new ArrayList<>();
     private int templateN = 0;
+    private int numberOfBuildOperations = 0;
+    private int numberOfMatchOperations = 0;
 
-    private TStaticTemplateMatcher mergeMatchers(TStaticTemplateMatcher a, TStaticTemplateMatcher b) throws TNotSupportedException{
+    private TStaticTemplateMatcher mergeMatchers(TStaticTemplateMatcher b, TStaticTemplateMatcher a) throws TNotSupportedException {
         ArrayList<Pair<String, Integer>> aTemplates = a.getTemplates();
         ArrayList<Pair<String, Integer>> bTemplates = b.getTemplates();
         int aTemplatesCount = a.getTemplatesCount();
         int bTemplatesCount = a.getTemplatesCount();
         TStaticTemplateMatcher result = new TStaticTemplateMatcher();
         for (int i = 0; i < aTemplatesCount; i++) {
+            numberOfBuildOperations++;
             result.setTemplateNumber(aTemplates.get(i).getValue());
             result.addTemplate(aTemplates.get(i).getKey());
         }
         for (int i = 0; i < bTemplatesCount; i++) {
+            numberOfBuildOperations++;
             result.setTemplateNumber(bTemplates.get(i).getValue());
             result.addTemplate(bTemplates.get(i).getKey());
         }
@@ -33,11 +37,15 @@ public class TDynamicTemplateMatcher implements IMetaTemplateMatcher {
         TStaticTemplateMatcher matcher = new TStaticTemplateMatcher();
         matcher.setTemplateNumber(templateN);
         matcher.addTemplate(template);
+        numberOfBuildOperations += matcher.getNumberOfBuildOperations();
+        size.add(0);
+        matchers.add(null);
         if (size.get(size.size() - 1) == 0) {
             size.add(0);
             matchers.add(null);
         }
         for (int i = 0; i < size.size(); i++) {
+            numberOfBuildOperations++;
             if (size.get(i) > 0) {
                 matcher = mergeMatchers(matcher, matchers.get(i));
                 size.set(i, 0);
@@ -53,17 +61,30 @@ public class TDynamicTemplateMatcher implements IMetaTemplateMatcher {
 
     @Override
     public ArrayList<Pair<Integer, Integer>> MatchStream(ICharStream stream) {
+        numberOfMatchOperations = 0;
         StringBuilder builder = new StringBuilder();
         while (!stream.isEmpty()) {
             builder.append(stream.getChar());
+            numberOfMatchOperations++;
         }
         String s = builder.toString();
         ArrayList<Pair<Integer, Integer>> result = new ArrayList<>();
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < size.size(); i++) {
+            numberOfMatchOperations++;
             if (size.get(i) > 0) {
                 result.addAll(matchers.get(i).MatchStream(new StringStream(s)));
+                numberOfMatchOperations += matchers.get(i).getNumberOfMatchOperations();
             }
         }
         return result;
+    }
+
+
+    public int getNumberOfBuildOperations() {
+        return numberOfBuildOperations;
+    }
+
+    public int getNumberOfMatchOperations() {
+        return numberOfMatchOperations;
     }
 }

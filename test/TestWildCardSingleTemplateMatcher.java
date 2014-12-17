@@ -14,7 +14,7 @@ public class TestWildCardSingleTemplateMatcher {
 
     private TWildcardSingleTemplateMatcher wildcardSingleTemplateMatcher;
 
-    private ArrayList<Pair<Integer, Integer>> naiveMatch (String template, String stream) {
+    private ArrayList<Pair<Integer, Integer>> naiveMatch(String template, String stream) {
         ArrayList<Pair<Integer, Integer>> res = new ArrayList<>();
         if (template.length() == 0) {
             return res;
@@ -38,8 +38,8 @@ public class TestWildCardSingleTemplateMatcher {
         wildcardSingleTemplateMatcher = new TWildcardSingleTemplateMatcher();
         wildcardSingleTemplateMatcher.addTemplate(template);
         streamSingle = new StringStream(stream);
-        ArrayList<Pair<Integer, Integer> > singleResult = wildcardSingleTemplateMatcher.MatchStream(streamSingle);
-        ArrayList<Pair<Integer, Integer> > naiveResult = naiveMatch(template, stream);
+        ArrayList<Pair<Integer, Integer>> singleResult = wildcardSingleTemplateMatcher.MatchStream(streamSingle);
+        ArrayList<Pair<Integer, Integer>> naiveResult = naiveMatch(template, stream);
         Assert.assertEquals(naiveResult.size(), singleResult.size());
         for (int i = 0; i < naiveResult.size(); i++) {
             Assert.assertEquals(naiveResult.get(i), singleResult.get(i));
@@ -60,7 +60,7 @@ public class TestWildCardSingleTemplateMatcher {
     }
 
     @Test
-    public void simpleTest() throws TNotSupportedException{
+    public void simpleTest() throws TNotSupportedException {
         TestEquality("a", "aaaa");
         TestEquality("ab", "abacaba");
         TestEquality("aba", "aba");
@@ -71,7 +71,7 @@ public class TestWildCardSingleTemplateMatcher {
     }
 
     @Test
-    public void cleverTest() throws TNotSupportedException{
+    public void cleverTest() throws TNotSupportedException {
         TestEquality("aba", "a");
         TestEquality("aba", "");
         TestEquality("", "aba");
@@ -87,14 +87,14 @@ public class TestWildCardSingleTemplateMatcher {
     public void stressTest() throws TNotSupportedException {
         Random generator = new Random(System.nanoTime());
         for (int i = 0; i < 100; i++) {
-            RandomStream rnd = new RandomStream(2 + i % 5,i % 10);
+            RandomStream rnd = new RandomStream(2 + i % 5, i % 10);
             StringBuilder template = new StringBuilder(rnd.getString());
             for (int j = 0; j < template.length(); j++) {
                 if (generator.nextInt() % 3 == 0) {
                     template.replace(j, j, "?");
                 }
             }
-            RandomStream stream = new RandomStream(2 * (i % 5  + 1),500);
+            RandomStream stream = new RandomStream(2 * (i % 5 + 1), 500);
             TestEquality(template.toString(), stream.getString());
         }
     }
@@ -105,13 +105,13 @@ public class TestWildCardSingleTemplateMatcher {
         for (int i = 0; i < 1000000; i++) {
             s.append('a');
         }
-        TestProductivity("a",s.toString());
+        TestProductivity("a", s.toString());
         s = new StringBuilder('a');
         for (char a = 'b'; a <= 'f'; a++) {
             s.append(a + s.toString());
         }
-        TestProductivity("a",s.toString());
-        TestProductivity("?",s.toString());
+        TestProductivity("a", s.toString());
+        TestProductivity("?", s.toString());
         StringBuilder template = new StringBuilder("");
         for (int i = 0; i < 100; i++) {
             if (i % 4 < 2) {
@@ -120,7 +120,7 @@ public class TestWildCardSingleTemplateMatcher {
                 template.append('a');
             }
         }
-        TestProductivity(template.toString(),s.toString());
+        TestProductivity(template.toString(), s.toString());
         template = new StringBuilder("");
         for (int i = 0; i < 100; i++) {
             if (i % 2 != 0) {
@@ -131,7 +131,7 @@ public class TestWildCardSingleTemplateMatcher {
         }
     }
 
-    @Test (expected = TNotSupportedException.class)
+    @Test(expected = TNotSupportedException.class)
     public void matchExceptionTest() throws TNotSupportedException {
         streamSingle = new StringStream("a");
         wildcardSingleTemplateMatcher = new TWildcardSingleTemplateMatcher();

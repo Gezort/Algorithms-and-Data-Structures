@@ -7,23 +7,29 @@ import java.util.Collections;
 import java.util.Comparator;
 
 /**
- * Created by Мирон on 07.11.2014 PACKAGE_NAME.
+ * Created by Мирон on 16.12.2014 PACKAGE_NAME.
  */
-public class TestStaticTemplateMatcher {
+public class TestDynamicTemplateMatcher {
 
     private ICharStream streamSingle;
-    private ICharStream streamStatic;
+    private ICharStream streamDynamic;
 
-    private TStaticTemplateMatcher staticTemplateMatcher = new TStaticTemplateMatcher();
+    private TDynamicTemplateMatcher dynamicTemplateMatcher = new TDynamicTemplateMatcher();
     private TSingleTemplateMatcher singleTemplateMatcher = new TSingleTemplateMatcher();
 
     Comparator pairComparator = new Comparator<Pair<Integer, Integer>>() {
         @Override
         public int compare(Pair<Integer, Integer> o1, Pair<Integer, Integer> o2) {
-            if (o1.getKey() < o2.getKey() || (o1.getKey() == o2.getKey() && o1.getValue() < o2.getValue())) {
+            if (o1.getKey() < o2.getKey()) {
                 return -1;
             }
-            if (o1.getKey() > o2.getKey() || (o1.getKey() == o2.getKey() && o1.getValue() > o2.getValue())) {
+            if (o1.getKey() > o2.getKey()) {
+                return 1;
+            }
+            if (o1.getValue() < o2.getValue()) {
+                return -1;
+            }
+            if (o1.getValue() > o2.getValue()) {
                 return 1;
             }
             return 0;
@@ -32,7 +38,7 @@ public class TestStaticTemplateMatcher {
 
     private void TestEquality(String[] template, String stream) throws TNotSupportedException {
         singleTemplateMatcher = new TSingleTemplateMatcher();
-        staticTemplateMatcher = new TStaticTemplateMatcher();
+        dynamicTemplateMatcher = new TDynamicTemplateMatcher();
         ArrayList<Pair<Integer, Integer>> singleResult = new ArrayList<>();
 
         for (int i = 0; i < template.length; i++) {
@@ -43,31 +49,34 @@ public class TestStaticTemplateMatcher {
         Collections.sort(singleResult, pairComparator);
 
         for (int i = 0; i < template.length; i++) {
-            staticTemplateMatcher.addTemplate(template[i]);
+            dynamicTemplateMatcher.addTemplate(template[i]);
         }
 
-        streamStatic = new StringStream(stream);
-        ArrayList<Pair<Integer, Integer>> staticResult = new ArrayList<>();
-        staticResult = staticTemplateMatcher.MatchStream(streamStatic);
-        Collections.sort(staticResult, pairComparator);
+        streamDynamic = new StringStream(stream);
+        ArrayList<Pair<Integer, Integer>> dynamicResult;
+        dynamicResult = dynamicTemplateMatcher.MatchStream(streamDynamic);
+        Collections.sort(dynamicResult, pairComparator);
 
-        Assert.assertEquals(singleResult.size(), staticResult.size());
+        Assert.assertEquals(singleResult.size(), dynamicResult.size());
         for (int i = 0; i < singleResult.size(); i++) {
-            Assert.assertEquals(singleResult.get(i), staticResult.get(i));
+            Assert.assertEquals(singleResult.get(i), dynamicResult.get(i));
         }
     }
 
     private void TestProductivity(String[] template, String stream) throws TNotSupportedException {
-        staticTemplateMatcher = new TStaticTemplateMatcher();
+        dynamicTemplateMatcher = new TDynamicTemplateMatcher();
         int templatesSize = 0;
         for (int i = 0; i < template.length; i++) {
-            staticTemplateMatcher.addTemplate(template[i]);
+            dynamicTemplateMatcher.addTemplate(template[i]);
             templatesSize += template[i].length();
         }
-        streamStatic = new StringStream(stream);
-        int answerSize = staticTemplateMatcher.MatchStream(streamStatic).size();
-        Assert.assertTrue(staticTemplateMatcher.getNumberOfBuildOperations() + staticTemplateMatcher.getNumberOfMatchOperations() <
-                2 * (stream.length() + answerSize + templatesSize * 26));
+        streamDynamic = new StringStream(stream);
+        if (template.length > 0) {
+            Assert.assertTrue(dynamicTemplateMatcher.getNumberOfBuildOperations() <
+                    4 * templatesSize * ((int) Math.log(template.length) + 1));
+            Assert.assertTrue(dynamicTemplateMatcher.getNumberOfMatchOperations() <
+                    4 * stream.length() * ((int) Math.log(template.length) + 1));
+        }
     }
 
     @Test
@@ -141,14 +150,4 @@ public class TestStaticTemplateMatcher {
         }
         TestProductivity(s, builder.toString());
     }
-
-    @Test(expected = TNotSupportedException.class)
-    public void addExceptionTest() throws TNotSupportedException {
-        staticTemplateMatcher = new TStaticTemplateMatcher();
-        staticTemplateMatcher.addTemplate("a");
-        staticTemplateMatcher.MatchStream(new StringStream("aba"));
-        staticTemplateMatcher.addTemplate("a");
-    }
-
-
 }
