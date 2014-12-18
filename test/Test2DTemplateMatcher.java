@@ -52,31 +52,6 @@ public class Test2DTemplateMatcher {
         TestEquality(A, B);
         B = new ArrayList<>(Arrays.asList("a"));
         TestEquality(A, B);
-        A = new ArrayList<>(Arrays.asList("bbbbbaaaababbbabbbabbabababbabaaabbabb",
-                "aabaabaaabbaaaaaaabbbaaaaaabbbaabbbabb",
-                "aaaabaaaabbababbabbaaaabaaaaabaaababaa",
-                "babbaaabaabbbbaaaaaabbbaabababbaaabbaa",
-                "baababbabbabbbabbbaababbaababbaababaab",
-                "babbaababaaababbaaaababaabbbaababaaaba",
-                "bbbabbabaaabbbbababbabaabbababbbabaabb",
-                "bbababaabbbbbbabaaaabbaaabbbabbbbabbaa",
-                "bbbbaaabaaabbbbaabbbaaaaabaabbbbbabaab",
-                "bbaaaabaabbbabbbaaaabbaaabbbbababababb",
-                "bbbbbbbaaabbabbabbabbbabbbbbaababbaaba",
-                "ababbabbaabaabbaaabaabbaababaabbbbabba",
-                "babbbabaabbbbabbbababbabbababbaabbabba",
-                "babaababbabbabaabaabbbbbaabbbbbbabbbbb",
-                "abababbaaaabaaababbbaabbbbbaaaaaaaabab",
-                "bababababababbaaaaaaaabbaabbaaaaaababa",
-                "bbabaabaabbbbabbabaabaabbbbabaaaaabbba",
-                "baabababbaababbaababbbaabaaaaababbaaaa",
-                "ababaabbabbaabbaababababaaaaaaabbaabaa",
-                "babbbaaaabbaabbbbaaabbbababbaabbaaabba",
-                "bababbbbbababbbabababbbbbbbabbabaaabab",
-                "bbaababbbbaabaaabaaaaabbbaabaabbbabbbb",
-                "bbaababbaabbbaaabaaababbaabaabbababaaa"));
-        B = new ArrayList<>(Arrays.asList("a", "b", "a", "a", "a", "a", "a", "b", "a"));
-        TestEquality(A, B);
     }
 
     @Test
