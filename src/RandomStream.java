@@ -7,7 +7,8 @@ public class RandomStream implements ICharStream {
     private String stream;
     private int Len;
     private int pos;
-    public RandomStream(int alphabetSize, int N)  {
+
+    public RandomStream(int alphabetSize, int N) {
         Random random = new Random(System.nanoTime());
         Len = N;
         if (Len == 0) {
@@ -20,6 +21,7 @@ public class RandomStream implements ICharStream {
         }
         stream = builder.toString();
     }
+
     public String getString() {
         return stream;
     }

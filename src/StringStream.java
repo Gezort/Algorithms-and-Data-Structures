@@ -4,6 +4,7 @@
 public class StringStream implements ICharStream {
     private int pos;
     private String stream;
+
     public StringStream(String s) {
         stream = s;
         pos = 0;

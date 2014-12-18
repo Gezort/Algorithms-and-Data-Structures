@@ -5,9 +5,10 @@ import java.util.ArrayList;
 /**
  * Created by Мирон on 10.10.2014 PACKAGE_NAME.
  */
-public class TNaiveTemplateMatcher implements IMetaTemplateMatcher{
+public class TNaiveTemplateMatcher implements IMetaTemplateMatcher {
     private ArrayList<String> templates;
     private int maxTSize;
+
     TNaiveTemplateMatcher() {
         maxTSize = 0;
         templates = new ArrayList<String>();
@@ -27,7 +28,7 @@ public class TNaiveTemplateMatcher implements IMetaTemplateMatcher{
         if (templates.size() == 0) {
             throw new NullPointerException("Matching while no templates aren't supported");
         }
-        ArrayList<Pair<Integer, Integer> > result = new ArrayList<Pair<Integer, Integer> >();
+        ArrayList<Pair<Integer, Integer>> result = new ArrayList<Pair<Integer, Integer>>();
         String currentStr = "";
         int pos = 0;
         while (!stream.isEmpty()) {
@@ -41,7 +42,7 @@ public class TNaiveTemplateMatcher implements IMetaTemplateMatcher{
                     continue;
                 }
                 if (t.equals(currentStr.substring(currentStr.length() - t.length()))) {
-                    result.add(new Pair<Integer, Integer> (pos, i));
+                    result.add(new Pair<Integer, Integer>(pos, i));
                 }
             }
             pos++;

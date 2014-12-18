@@ -10,13 +10,13 @@ public class TStaticTemplateMatcher implements IMetaTemplateMatcher {
     private ArrayList<vertex> tree;
     private ArrayList<Pair<String, Integer>> templates;
     private boolean alreadyBuilt;
-    private int templateNumber,N;
+    private int templateNumber, N;
     private int templatesCount = 0;
 
     private int numberOfMatchOperations = 0;
     private int numberOfBuildOperations = 0;
 
-    public TStaticTemplateMatcher(){
+    public TStaticTemplateMatcher() {
         tree = new ArrayList<>();
         templates = new ArrayList<>();
         alreadyBuilt = false;
@@ -80,13 +80,13 @@ public class TStaticTemplateMatcher implements IMetaTemplateMatcher {
 
     @Override
     public ArrayList<Pair<Integer, Integer>> MatchStream(ICharStream stream) {
-        ArrayList<Pair<Integer, Integer> > result = new ArrayList<Pair<Integer, Integer> >();
+        ArrayList<Pair<Integer, Integer>> result = new ArrayList<Pair<Integer, Integer>>();
         alreadyBuilt = true;
         int v = 0;
         int pos = 0;
         while (!stream.isEmpty()) {
             int ch = stream.getChar() - 'a';
-            v = go(v,ch);
+            v = go(v, ch);
             if (tree.get(v).leaf.size() > 0) {
                 for (int l : tree.get(v).leaf) {
                     numberOfMatchOperations++;
@@ -114,10 +114,10 @@ public class TStaticTemplateMatcher implements IMetaTemplateMatcher {
         if (v == 0 || tree.get(v).parent == 0) {
             return tree.get(v).link = 0;
         }
-        return tree.get(v).link = go(getLink(tree.get(v).parent),tree.get(v).parentCh);
+        return tree.get(v).link = go(getLink(tree.get(v).parent), tree.get(v).parentCh);
     }
 
-    private int go(int v,int ch) {
+    private int go(int v, int ch) {
         numberOfMatchOperations++;
         if (tree.get(v).edge[ch] != -1) {
             return tree.get(v).go[ch] = tree.get(v).edge[ch];
@@ -128,7 +128,7 @@ public class TStaticTemplateMatcher implements IMetaTemplateMatcher {
         if (v == 0) {
             return tree.get(v).go[ch] = 0;
         }
-        return  tree.get(v).go[ch] = go (getLink(v),ch);
+        return tree.get(v).go[ch] = go(getLink(v), ch);
     }
 
     private int getHardLink(int v) {
@@ -154,7 +154,8 @@ public class TStaticTemplateMatcher implements IMetaTemplateMatcher {
         int link;
         int[] go;
         int hardLink;
-        vertex(){
+
+        vertex() {
             leaf = new ArrayList<>();
             parent = 0;
             parentCh = 0;

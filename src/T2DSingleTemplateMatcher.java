@@ -24,7 +24,7 @@ public class T2DSingleTemplateMatcher {
         return;
     }
 
-    public ArrayList<Pair<Integer, Integer>> MatchStream(ArrayList<String> B) throws TNotSupportedException {
+    public ArrayList<Pair<Integer, Integer>> Match(ArrayList<String> B) throws TNotSupportedException {
         if (NA == 0) {
             throw new TNotSupportedException("Matching stream without template isn't supported");
         }
@@ -35,47 +35,36 @@ public class T2DSingleTemplateMatcher {
         }
         int NB = B.size();
         int MB = B.get(0).length();
-        ArrayList<Pair<Integer,Integer>>[] coincidences = new ArrayList[NB];
-        TSingleTemplateMatcher matcher = new TSingleTemplateMatcher();
         if (NB > NA || MB > MA) {
             return new ArrayList<>();
         }
+
+        TStaticTemplateMatcher matcher = new TStaticTemplateMatcher();
         for (int i = 0; i < NB; i++) {
-            coincidences[i] = new ArrayList<>();
             matcher.addTemplate(B.get(i));
-            int len = B.get(i).length();
-            for (int j = 0; j < NA; j++) {
-                ArrayList<Pair<Integer, Integer>> res = matcher.MatchStream(new StringStream(A.get(j)));
-                for (Pair<Integer, Integer> p : res) {
-                    coincidences[i].add(new Pair<>(j,p.getKey() - len + 1));
-                }
+        }
+        int[][] counter = new int[NA][MA];
+        for (int i = 0; i < NA; i++) {
+            for (int j = 0; j < MA; j++) {
+                counter[i][j] = 0;
             }
         }
-        ArrayList<Pair<Integer,Integer>> result = new ArrayList<>();
-        int[] index = new int[NB];
-        for (int i = 0; i < NB; i++) {
-            index[i] = 0;
-        }
-        for (int i = 0; i < coincidences[0].size(); i++) {
-            index[0] = i;
-            boolean flag = true;
-            for (int j = 1; j < NB; j++) {
-                int curInd = index[j];
-                while (curInd < coincidences[j].size() &&
-                        coincidences[j].get(curInd).getKey() < coincidences[j - 1].get(index[j - 1]).getKey() + j &&
-                        coincidences[j].get(curInd).getValue() < coincidences[j - 1].get(index[j - 1]).getValue()) {
-                    curInd++;
-                    index[j]++;
+        for (int i = 0; i < NA; i++) {
+            ArrayList<Pair<Integer, Integer>> res = matcher.MatchStream(new StringStream(A.get(i)));
+            for (Pair<Integer, Integer> p : res) {
+                int j = p.getKey() - B.get(p.getValue()).length() + 1;
+                if (i < p.getValue()) {
+                    continue;
                 }
-                if (curInd >= coincidences[j].size() ||
-                        coincidences[j].get(curInd).getKey() != coincidences[j - 1].get(index[j - 1]).getKey() + j ||
-                        coincidences[j].get(curInd).getValue() != coincidences[j - 1].get(index[j - 1]).getValue()) {
-                    flag = false;
-                    break;
-                }
+                counter[i - p.getValue()][j]++;
             }
-            if (flag) {
-                result.add(coincidences[0].get(i));
+        }
+        ArrayList<Pair<Integer, Integer>> result = new ArrayList<>();
+        for (int i = 0; i < NA; i++) {
+            for (int j = 0; j < MA; j++) {
+                if (counter[i][j] == NB) {
+                    result.add(new Pair<>(i, j));
+                }
             }
         }
         return result;

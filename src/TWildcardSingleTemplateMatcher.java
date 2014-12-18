@@ -1,7 +1,6 @@
 import javafx.util.Pair;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Created by Мирон on 05.12.2014 PACKAGE_NAME.

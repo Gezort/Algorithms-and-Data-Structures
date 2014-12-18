@@ -68,7 +68,7 @@ public class TSingleTemplateMatcher implements IMetaTemplateMatcher {
         if (rightTemplate == null) {
             throw new TNotSupportedException("Stream matching without template isn't supported in TSingleTemplateMatcher");
         }
-        ArrayList<Pair<Integer, Integer> > result = new ArrayList<Pair<Integer, Integer> >();
+        ArrayList<Pair<Integer, Integer>> result = new ArrayList<Pair<Integer, Integer>>();
         int previousPi = 0;
         int pos = 0;
         while (!stream.isEmpty()) {
@@ -81,7 +81,7 @@ public class TSingleTemplateMatcher implements IMetaTemplateMatcher {
             }
             previousPi = (getTemplateChar(currentPi) == nextChar ? currentPi + 1 : 0);
             if (previousPi == leftN + rightN) {
-                result.add(new Pair<Integer, Integer> (pos, id - 1));
+                result.add(new Pair<Integer, Integer>(pos, id - 1));
             }
             pos++;
         }
