@@ -55,6 +55,24 @@ public class Test2DTemplateMatcher {
     }
 
     @Test
+    public void cleverTest() throws TNotSupportedException {
+        StringBuilder s = new StringBuilder("");
+        for (int i = 0; i < 300; i++) {
+            s.append('a');
+        }
+        ArrayList<String> A = new ArrayList<>();
+        ArrayList<String> B = new ArrayList<>();
+        for (int i = 0; i < 200; i++) {
+            A.add(s.toString());
+        }
+        s = new StringBuilder(s.substring(200));
+        for (int i = 0; i < 50; i++) {
+            B.add(s.toString());
+        }
+        TestEquality(A, B);
+    }
+
+    @Test
     public void stressTest() throws TNotSupportedException {
         Random random = new Random(System.nanoTime());
         for (int i = 0; i < 300; i++) {
