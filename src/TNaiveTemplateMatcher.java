@@ -30,22 +30,22 @@ public class TNaiveTemplateMatcher implements IMetaTemplateMatcher {
         }
         ArrayList<Pair<Integer, Integer>> result = new ArrayList<Pair<Integer, Integer>>();
         String currentStr = "";
-        int pos = 0;
+        int possitionInStream = 0;
         while (!stream.isEmpty()) {
             char nextChar = stream.getChar();
             currentStr += nextChar;
             if (currentStr.length() > maxTSize)
                 currentStr = currentStr.substring(1);
             for (int i = 0; i < templates.size(); i++) {
-                String t = templates.get(i);
-                if (t.length() > currentStr.length()) {
+                String currentTemplate = templates.get(i);
+                if (currentTemplate.length() > currentStr.length()) {
                     continue;
                 }
-                if (t.equals(currentStr.substring(currentStr.length() - t.length()))) {
-                    result.add(new Pair<Integer, Integer>(pos, i));
+                if (currentTemplate.equals(currentStr.substring(currentStr.length() - currentTemplate.length()))) {
+                    result.add(new Pair<Integer, Integer>(possitionInStream, i));
                 }
             }
-            pos++;
+            possitionInStream++;
         }
         return result;
     }

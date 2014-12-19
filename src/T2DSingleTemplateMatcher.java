@@ -39,9 +39,18 @@ public class T2DSingleTemplateMatcher {
             return new ArrayList<>();
         }
 
-        TStaticTemplateMatcher matcher = new TStaticTemplateMatcher();
+        TSingleTemplateMatcher matcher = new TSingleTemplateMatcher();
+        ArrayList<Pair<Integer,Integer>>[] coincidences = new ArrayList[NB];
         for (int i = 0; i < NB; i++) {
+            coincidences[i] = new ArrayList<>();
             matcher.addTemplate(B.get(i));
+            int len = B.get(i).length();
+            for (int j = 0; j < NA; j++) {
+                ArrayList<Pair<Integer, Integer>> res = matcher.MatchStream(new StringStream(A.get(j)));
+                for (Pair<Integer, Integer> p : res) {
+                    coincidences[i].add(new Pair<>(j,p.getKey() - len + 1));
+                }
+            }
         }
         int[][] counter = new int[NA][MA];
         for (int i = 0; i < NA; i++) {
