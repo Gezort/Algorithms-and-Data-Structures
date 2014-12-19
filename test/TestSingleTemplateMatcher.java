@@ -79,11 +79,25 @@ public class TestSingleTemplateMatcher {
             s.append('a');
         }
         TestProductivity("a", s.toString());
+
+        TestProductivity(s.substring(50000), s.toString());
         s = new StringBuilder('a');
         for (char a = 'b'; a <= 'f'; a++) {
             s.append(a + s.toString());
         }
         TestProductivity("a", s.toString());
+
+        TestProductivity(s.toString(), s.toString());
+
+        s = new StringBuilder(new RandomStream(5, 100000).getString());
+        TestProductivity(s.toString(), s.toString());
+
+        s = new StringBuilder(new RandomStream(5, 100).getString());
+        String template = s.toString();
+        for (int i = 0; i < 8; i++) {
+            s.append(s.toString());
+        }
+        TestProductivity(template, s.toString());
     }
 
     @Test(expected = TNotSupportedException.class)

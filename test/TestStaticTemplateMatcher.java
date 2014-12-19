@@ -131,6 +131,7 @@ public class TestStaticTemplateMatcher {
             builder.append(builder.toString());
         }
         TestProductivity(s, builder.toString());
+
         builder = new StringBuilder("a");
         String temp;
         for (char a = 'b'; a <= 'f'; a++) {
@@ -140,6 +141,17 @@ public class TestStaticTemplateMatcher {
             builder.append(temp);
         }
         TestProductivity(s, builder.toString());
+
+        for (int i = 0; i < 100; i++) {
+            TestProductivity(s, new RandomStream(25, 100000).getString());
+        }
+        s = new String[100];
+        String stream = new RandomStream(20, 100000).getString();
+        for (int i = 0; i < 50; i++) {
+            s[i] = stream.substring((i % 2) * 100, i * 100);
+            s[i + 50] = s[i] + (i % 2 == 1 ? "xyz" : "a");
+        }
+        TestProductivity(s, stream);
     }
 
     @Test(expected = TNotSupportedException.class)
