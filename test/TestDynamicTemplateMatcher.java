@@ -36,6 +36,15 @@ public class TestDynamicTemplateMatcher {
         }
     };
 
+    private void compareTwoLists(ArrayList<Pair<Integer, Integer>> l1, ArrayList<Pair<Integer, Integer>> l2) {
+        Collections.sort(l1, pairComparator);
+        Collections.sort(l2, pairComparator);
+        Assert.assertEquals(l1.size(), l2.size());
+        for (int i = 0; i < l1.size(); i++) {
+            Assert.assertEquals(l1.get(i), l2.get(i));
+        }
+    }
+
     private void TestEquality(String[] template, String stream) throws TNotSupportedException {
         singleTemplateMatcher = new TSingleTemplateMatcher();
         dynamicTemplateMatcher = new TDynamicTemplateMatcher();
@@ -46,7 +55,6 @@ public class TestDynamicTemplateMatcher {
             streamSingle = new StringStream(stream);
             singleResult.addAll(singleTemplateMatcher.MatchStream(streamSingle));
         }
-        Collections.sort(singleResult, pairComparator);
 
         for (int i = 0; i < template.length; i++) {
             dynamicTemplateMatcher.addTemplate(template[i]);
@@ -55,12 +63,7 @@ public class TestDynamicTemplateMatcher {
         streamDynamic = new StringStream(stream);
         ArrayList<Pair<Integer, Integer>> dynamicResult;
         dynamicResult = dynamicTemplateMatcher.MatchStream(streamDynamic);
-        Collections.sort(dynamicResult, pairComparator);
-
-        Assert.assertEquals(singleResult.size(), dynamicResult.size());
-        for (int i = 0; i < singleResult.size(); i++) {
-            Assert.assertEquals(singleResult.get(i), dynamicResult.get(i));
-        }
+        compareTwoLists(singleResult, dynamicResult);
     }
 
     private void TestProductivity(String[] template, String stream) throws TNotSupportedException {
@@ -106,6 +109,24 @@ public class TestDynamicTemplateMatcher {
                 temps[k] = template.getString();
             }
             TestEquality(temps, stream.getString());
+        }
+    }
+
+    @Test
+    public void addTest() throws TNotSupportedException {
+        dynamicTemplateMatcher = new TDynamicTemplateMatcher();
+        ArrayList<String> templates = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            TStaticTemplateMatcher staticMatcher = new TStaticTemplateMatcher();
+            RandomStream dynamicStream = new RandomStream(2 + (i % 4), 10000);
+            StringStream staticStream = new StringStream(dynamicStream.getString());
+            RandomStream template = new RandomStream(2 + (i % 4), i % 20);
+            templates.add(template.getString());
+            dynamicTemplateMatcher.addTemplate(template.getString());
+            for (String s : templates) {
+                staticMatcher.addTemplate(s);
+            }
+            compareTwoLists(dynamicTemplateMatcher.MatchStream(dynamicStream), staticMatcher.MatchStream(staticStream));
         }
     }
 
