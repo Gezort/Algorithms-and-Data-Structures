@@ -81,6 +81,7 @@ public class TestSingleTemplateMatcher {
         TestProductivity("a", s.toString());
 
         TestProductivity(s.substring(50000), s.toString());
+
         s = new StringBuilder('a');
         for (char a = 'b'; a <= 'f'; a++) {
             s.append(a + s.toString());

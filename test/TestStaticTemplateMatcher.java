@@ -149,7 +149,7 @@ public class TestStaticTemplateMatcher {
         String stream = new RandomStream(20, 100000).getString();
         for (int i = 0; i < 50; i++) {
             s[i] = stream.substring((i % 2) * 100, i * 100);
-            s[i + 50] = s[i] + (i % 2 == 1 ? "xyz" : "a");
+            s[i + 50] = s[i] + (i % 2 == 1 ? "x" : "a");
         }
         TestProductivity(s, stream);
     }

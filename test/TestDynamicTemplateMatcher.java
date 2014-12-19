@@ -72,14 +72,24 @@ public class TestDynamicTemplateMatcher {
         for (int i = 0; i < template.length; i++) {
             dynamicTemplateMatcher.addTemplate(template[i]);
             templatesSize += template[i].length();
+            streamDynamic = new StringStream(stream);
+            if (template.length > 0) {
+                Assert.assertTrue(dynamicTemplateMatcher.getNumberOfBuildOperations() <
+                        4 * templatesSize * ((int) Math.log(template.length) + 1));
+                Assert.assertTrue(dynamicTemplateMatcher.getNumberOfMatchOperations() <
+                        4 * stream.length() * ((int) Math.log(template.length) + 1));
+            } else return;
+        }
+        dynamicTemplateMatcher = new TDynamicTemplateMatcher();
+        for (int i = 0; i < template.length; i++) {
+            dynamicTemplateMatcher.addTemplate(template[i]);
+            templatesSize += template[i].length();
         }
         streamDynamic = new StringStream(stream);
-        if (template.length > 0) {
-            Assert.assertTrue(dynamicTemplateMatcher.getNumberOfBuildOperations() <
-                    4 * templatesSize * ((int) Math.log(template.length) + 1));
-            Assert.assertTrue(dynamicTemplateMatcher.getNumberOfMatchOperations() <
-                    4 * stream.length() * ((int) Math.log(template.length) + 1));
-        }
+        Assert.assertTrue(dynamicTemplateMatcher.getNumberOfBuildOperations() <
+                4 * templatesSize * ((int) Math.log(template.length) + 1));
+        Assert.assertTrue(dynamicTemplateMatcher.getNumberOfMatchOperations() <
+                4 * stream.length() * ((int) Math.log(template.length) + 1));
     }
 
     @Test
