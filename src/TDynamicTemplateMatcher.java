@@ -67,12 +67,12 @@ public class TDynamicTemplateMatcher implements IMetaTemplateMatcher {
             builder.append(stream.getChar());
             numberOfMatchOperations++;
         }
-        String streamString = builder.toString();
+        String s = builder.toString();
         ArrayList<Pair<Integer, Integer>> result = new ArrayList<>();
         for (int i = 0; i < size.size(); i++) {
             numberOfMatchOperations++;
             if (size.get(i) > 0) {
-                result.addAll(matchers.get(i).MatchStream(new StringStream(streamString)));
+                result.addAll(matchers.get(i).MatchStream(new StringStream(s)));
                 numberOfMatchOperations += matchers.get(i).getNumberOfMatchOperations();
             }
         }
